@@ -8,6 +8,7 @@
 
 //process class
 class Process {
+public:
     std::string name;
     int priority;
     int burst_time;
