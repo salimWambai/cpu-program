@@ -7,17 +7,17 @@
 #include <iomanip>
 
 //process class
-class Process{
-public:
+class Process {
     std::string name;
     int priority;
-    int burstTime;
-    int arrivalTime;
-    int waitingTime;
+    int burst_time;
+    int arrival_time;
+    int waiting_time;
     double completed;
 
-    Process(const std: string& n, int p, int burst, int arrival)
-    : name(n), priority(p), burstTime(burst), arrivalTime(arrival), waitingTime(0),completed(false) {}
+    
+    Process(const std::string& n, int p, int burst, int arrival)
+        : name(n), priority(p), burst_time(burst), arrival_time(arrival), waiting_time(0), completed(false) {}
 };
 //scheduler funtion
 class Scheduler{
