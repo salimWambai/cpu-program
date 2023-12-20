@@ -28,11 +28,15 @@ class Scheduler{
 //FCFS
 class FCFS : public Scheduler{
     public:
-    void scheduleProcesses(const std::vector<Process>& processes){
+    void scheduleProcesses(const std::vector<Process>& processes) {
         std::cout<<"FCFS Scheduling:\n";
+        int current_time=0;
         for(size_t i = 0; i < processes.size(); ++i){
-            const Process& Process = processes[i];
-            std::cout<<"Process Executing: "<<Process.name<<"\n";
+          const  Process& process =processes[i];
+            Process.waiting_time = current_time - process.arrival_time;
+            current_time += process.burst_time;
+            Process.completed = true;
+            std::cout<<"Process Executing: "<<process.name<< "Waiting Time: " << process.waiting_time  << ")\n";
         }
         std::cout<<"\n";
     }
@@ -43,10 +47,16 @@ class SJF : public Scheduler{
     void scheduleProcesses(const std::vector<Process>& processes){
         std::cout<<"SJF Scheduling :\n";
         std::vector<Process> sortedProcessess = processes;
-        std::sort(sortedProcessess.begin(), sortedProcessess.end(), CompareBustTime());
+        std::sort(sortedProcessess.begin(), sortedProcessess.end(), [](const Process& a, const Process& b) {
+            return a.burst_time < b.burst_time;
+        });
+        int current_time = 0;
         for (size_t i = 0; i < sortedProcessess.size(); ++i){
-            const Process& Process = sortedProcessess[i];
-            std::cout<<"Process Executing: " << Process.name << "\n";
+            Process& process = sortedProcessess[i];
+            process.waiting_time = current_time - process.arrival_time;
+            current_time += process.burst_time;
+            process.completed = true;
+            std::cout<<"Process Executing: " << process.name << "\n";
         }
         std::cout<<"\n";
     }
