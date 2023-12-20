@@ -62,11 +62,27 @@ class SJF : public Scheduler{
     }
 };
 
-private:{
-    struct CompareBurstTime {
-        bool operator()(const Task& a, const Task& b) const {
-            return a.burstTime < b.burstTime;
+//RR scheduling
+class RoundRobin : public Scheduler{
+    public:
+    void scheduleProcesses(const std::vector<Process>& processess){
+        std :: cout<<"RoundRobin:  \n";
+        int timeQuantum;
+        std::cout<<"Enter time quantum for Round Robin: ";
+        std::cin>> timeQuantum;
+        std::deque<Process> processQueue (Process.begin(), Process.end());
+        while (!processQueue.empty()) {
+            Process process = processQueue.front();
+            processQueue.pop_front();
+            if (process.burst_time > timeQuantum) {
+                process.burst_time -= timeQuantum;
+                processQueue.push_back(process);
+            }
+            else{
+                std::cout<<"Process Executing: "<< process.name<<"\n";
+            }
         }
-    };
+        std::cout<<"\n";
 
+    }
 };
