@@ -106,4 +106,13 @@ class PriorityAlgo : public Scheduler {
         }
         std::cout<<"\n;"
     }
+};
+
+//statistics function
+void displayStats (const std::vector<Process>& processes){
+    std::cout << "Process\tWaiting Time\n";
+    for(const Process& process : processes){
+        std::cout << process.name << "\t" << process.waiting_time << "\n";
+        
+    }
 }
