@@ -79,10 +79,31 @@ class RoundRobin : public Scheduler{
                 processQueue.push_back(process);
             }
             else{
-                std::cout<<"Process Executing: "<< process.name<<"\n";
+                process.waiting_time += processQueue.size() * timeQuantum;
+                process.completed = true;
+                std::cout<<"Process Executing: "<< process.name<< "Waiting TIme: " <<process.waiting_time <<  "\n";
             }
         }
         std::cout<<"\n";
 
     }
 };
+//Priority scheduling
+class PriorityAlgo : public Scheduler {
+    public:
+    void scheduleProcesses(std::vector<Process>& processes) {
+        std::cout<<"Priority Scheduling: \n";
+        std::sort(processes.begin(), processes.end(), [](const Process& a, const Process& b){
+            return a.priority > b.priority;
+        });
+        int current_time = 0;
+        for (size_t i = 0; i <processes.size(); ++i){
+            Process& process = processes[i];
+            process.waiting_time = current_time - process.arrival_time;
+            current_time += process.burst_time;
+            process.completed = true;
+            std:: cout << "Process Executing " << process.name << " (Waiting Time: " << process.waiting_time << ")\n"; 
+        }
+        std::cout<<"\n;"
+    }
+}
