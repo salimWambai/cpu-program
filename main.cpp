@@ -33,10 +33,10 @@ class FCFS : public Scheduler{
         cout<<"FCFS Scheduling:\n";
         int current_time = 0;
         for(size_t i = 0; i < processes.size(); ++i){
-           const Process& process =processes[i];
-            process.waiting_time = current_time - process.arrival_time;
+           Process& process = processes[i];
+           process.waiting_time = current_time - process.arrival_time;
             current_time += process.burst_time;
-            Process.completed = true;
+             process.completed = true;
             cout<<"Process Executing: "<<process.name<< "Waiting Time: " << process.waiting_time  << ")\n";
         }
         cout<<"\n";
@@ -71,9 +71,9 @@ class RoundRobin : public Scheduler{
         int timeQuantum;
         cout<<"Enter time quantum for Round Robin: ";
         cin>> timeQuantum;
-        deque<Process> processQueue(Process.begin(), processes.end());
+        deque<Process> processQueue(processes.begin(), processes.end());
         while (!processQueue.empty()) {
-            Process process = processQueue.front();
+            Process& process = processQueue.front();
             processQueue.pop_front();
             if (process.burst_time > timeQuantum) {
                 process.burst_time -= timeQuantum;
