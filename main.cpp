@@ -18,18 +18,18 @@ public:
     double completed;
 
     
-    Process(const std::string& n, int p, int burst, int arrival)
+    Process(const string& n, int p, int burst, int arrival)
         : name(n), priority(p), burst_time(burst), arrival_time(arrival), waiting_time(0), completed(false) {}
 };
 //scheduler funtion
 class Scheduler{
     public:
-    virtual void scheduleProcesses(std::vector<Process>& processes) = 0;
+    virtual void scheduleProcesses(vector<Process>& processes) = 0;
 };
 //FCFS
 class FCFS : public Scheduler{
     public:
-    void scheduleProcesses(const std::vector<Process>& processes) {
+    void scheduleProcesses(const vector<Process>& processes) {
         cout<<"FCFS Scheduling:\n";
         int current_time = 0;
         for(size_t i = 0; i < processes.size(); ++i){
@@ -45,7 +45,7 @@ class FCFS : public Scheduler{
 //SJF
 class SJF : public Scheduler{
     public:
-    void scheduleProcesses(const std::vector<Process>& processes){
+    void scheduleProcesses(const vector<Process>& processes){
         cout<<"SJF Scheduling :\n";
         vector<Process> sortedProcessess = processes;
         sort(sortedProcessess.begin(), sortedProcessess.end(), [](const Process& a, const Process& b) {
@@ -66,7 +66,7 @@ class SJF : public Scheduler{
 //RR scheduling
 class RoundRobin : public Scheduler{
     public:
-    void scheduleProcesses(const std::vector<Process>& processess){
+    void scheduleProcesses(const vector<Process>& processess){
         cout<<"RoundRobin:  \n";
         int timeQuantum;
         cout<<"Enter time quantum for Round Robin: ";
@@ -92,7 +92,7 @@ class RoundRobin : public Scheduler{
 //Priority scheduling
 class PriorityAlgo : public Scheduler {
     public:
-    void scheduleProcesses(std::vector<Process>& processes) {
+    void scheduleProcesses(vector<Process>& processes) {
         cout<<"Priority Scheduling: \n";
         sort(processes.begin(), processes.end(), [](const Process& a, const Process& b){
             return a.priority > b.priority;
@@ -110,7 +110,7 @@ class PriorityAlgo : public Scheduler {
 };
 
 //statistics function
-void displayStats (const std::vector<Process>& processes){
+void displayStats (const vector<Process>& processes){
     cout << "Process\tWaiting Time\n";
     for(const Process& process : processes){
         cout << process.name << "\t" << process.waiting_time << "\n";
@@ -136,5 +136,5 @@ int main (){
 
     int choice;
     cin>> choice;
-    
+
 }
