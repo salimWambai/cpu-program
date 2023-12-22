@@ -56,7 +56,7 @@ class SJF : public Scheduler{
             Process& process = sortedProcessess[i];
             process.waiting_time = current_time - process.arrival_time;
             current_time += process.burst_time;
-            process.completed = true;
+            process.completed ;
             cout<<"Process Executing: " << process.name << "\n";
         }
         cout<<"\n";
@@ -71,7 +71,7 @@ class RoundRobin : public Scheduler{
         int timeQuantum;
         cout<<"Enter time quantum for Round Robin: ";
         cin>> timeQuantum;
-        deque<Process> processQueue (Process.begin(), Process.end());
+        deque<Process> processQueue(Process.begin(), processes.end());
         while (!processQueue.empty()) {
             Process process = processQueue.front();
             processQueue.pop_front();
@@ -105,7 +105,7 @@ class PriorityAlgo : public Scheduler {
             process.completed = true;
             cout << "Process Executing " << process.name << " (Waiting Time: " << process.waiting_time << ")\n"; 
         }
-        cout<<"\n;"
+        cout<<"\n";
     }
 };
 
