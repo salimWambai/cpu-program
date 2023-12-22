@@ -5,6 +5,7 @@
 #include <deque>
 #include <string>
 #include <iomanip>
+using namespace std;
 
 //process class
 class Process {
@@ -29,25 +30,25 @@ class Scheduler{
 class FCFS : public Scheduler{
     public:
     void scheduleProcesses(const std::vector<Process>& processes) {
-        std::cout<<"FCFS Scheduling:\n";
-        int current_time=0;
+        cout<<"FCFS Scheduling:\n";
+        int current_time = 0;
         for(size_t i = 0; i < processes.size(); ++i){
-          const  Process& process =processes[i];
-            Process.waiting_time = current_time - process.arrival_time;
+           const Process& process =processes[i];
+            process.waiting_time = current_time - process.arrival_time;
             current_time += process.burst_time;
             Process.completed = true;
-            std::cout<<"Process Executing: "<<process.name<< "Waiting Time: " << process.waiting_time  << ")\n";
+            cout<<"Process Executing: "<<process.name<< "Waiting Time: " << process.waiting_time  << ")\n";
         }
-        std::cout<<"\n";
+        cout<<"\n";
     }
 };
 //SJF
 class SJF : public Scheduler{
     public:
     void scheduleProcesses(const std::vector<Process>& processes){
-        std::cout<<"SJF Scheduling :\n";
-        std::vector<Process> sortedProcessess = processes;
-        std::sort(sortedProcessess.begin(), sortedProcessess.end(), [](const Process& a, const Process& b) {
+        cout<<"SJF Scheduling :\n";
+        vector<Process> sortedProcessess = processes;
+        sort(sortedProcessess.begin(), sortedProcessess.end(), [](const Process& a, const Process& b) {
             return a.burst_time < b.burst_time;
         });
         int current_time = 0;
@@ -56,9 +57,9 @@ class SJF : public Scheduler{
             process.waiting_time = current_time - process.arrival_time;
             current_time += process.burst_time;
             process.completed = true;
-            std::cout<<"Process Executing: " << process.name << "\n";
+            cout<<"Process Executing: " << process.name << "\n";
         }
-        std::cout<<"\n";
+        cout<<"\n";
     }
 };
 
@@ -66,11 +67,11 @@ class SJF : public Scheduler{
 class RoundRobin : public Scheduler{
     public:
     void scheduleProcesses(const std::vector<Process>& processess){
-        std :: cout<<"RoundRobin:  \n";
+        cout<<"RoundRobin:  \n";
         int timeQuantum;
-        std::cout<<"Enter time quantum for Round Robin: ";
-        std::cin>> timeQuantum;
-        std::deque<Process> processQueue (Process.begin(), Process.end());
+        cout<<"Enter time quantum for Round Robin: ";
+        cin>> timeQuantum;
+        deque<Process> processQueue (Process.begin(), Process.end());
         while (!processQueue.empty()) {
             Process process = processQueue.front();
             processQueue.pop_front();
@@ -81,10 +82,10 @@ class RoundRobin : public Scheduler{
             else{
                 process.waiting_time += processQueue.size() * timeQuantum;
                 process.completed = true;
-                std::cout<<"Process Executing: "<< process.name<< "Waiting TIme: " <<process.waiting_time <<  "\n";
+                cout<<"Process Executing: "<< process.name<< "Waiting TIme: " <<process.waiting_time <<  "\n";
             }
         }
-        std::cout<<"\n";
+        cout<<"\n";
 
     }
 };
@@ -92,8 +93,8 @@ class RoundRobin : public Scheduler{
 class PriorityAlgo : public Scheduler {
     public:
     void scheduleProcesses(std::vector<Process>& processes) {
-        std::cout<<"Priority Scheduling: \n";
-        std::sort(processes.begin(), processes.end(), [](const Process& a, const Process& b){
+        cout<<"Priority Scheduling: \n";
+        sort(processes.begin(), processes.end(), [](const Process& a, const Process& b){
             return a.priority > b.priority;
         });
         int current_time = 0;
@@ -102,17 +103,38 @@ class PriorityAlgo : public Scheduler {
             process.waiting_time = current_time - process.arrival_time;
             current_time += process.burst_time;
             process.completed = true;
-            std:: cout << "Process Executing " << process.name << " (Waiting Time: " << process.waiting_time << ")\n"; 
+            cout << "Process Executing " << process.name << " (Waiting Time: " << process.waiting_time << ")\n"; 
         }
-        std::cout<<"\n;"
+        cout<<"\n;"
     }
 };
 
 //statistics function
 void displayStats (const std::vector<Process>& processes){
-    std::cout << "Process\tWaiting Time\n";
+    cout << "Process\tWaiting Time\n";
     for(const Process& process : processes){
-        std::cout << process.name << "\t" << process.waiting_time << "\n";
-        
+        cout << process.name << "\t" << process.waiting_time << "\n";
+
     }
+    //average WT
+    double average_waiting_time = 0;
+    for(const Process& process : processes){
+        average_waiting_time += process.waiting_time;
+    }
+    average_waiting_time /= processes.size();
+    cout << "\nAverage Waiting Time: " << fixed << setprecision(2) << average_waiting_time << "\n";
+
+}
+//user main function UI
+int main (){
+    cout << "Select Scheduling Method: \n";
+    cout << "1. FCFS\n";
+    cout << "2. SJF\n";
+    cout << "3. Round Robin\n";
+    cout << "4. Priority Scheduling\n";
+    cout << "Choose a Number: ";
+
+    int choice;
+    cin>> choice;
+    
 }
