@@ -29,7 +29,7 @@ class Scheduler{
 //FCFS
 class FCFS : public Scheduler{
     public:
-    void scheduleProcesses(const vector<Process>& processes) {
+    void scheduleProcesses(vector<Process>& processes) {
         cout<<"FCFS Scheduling:\n";
         int current_time = 0;
         for(size_t i = 0; i < processes.size(); ++i){
@@ -66,7 +66,7 @@ class SJF : public Scheduler{
 //RR scheduling
 class RoundRobin : public Scheduler{
     public:
-    void scheduleProcesses(const vector<Process>& processess){
+    void scheduleProcesses(vector<Process>& processes) {
         cout<<"RoundRobin:  \n";
         int timeQuantum;
         cout<<"Enter time quantum for Round Robin: ";
