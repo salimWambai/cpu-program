@@ -137,4 +137,21 @@ int main (){
     int choice;
     cin>> choice;
 
+    cout << "Select mode: \n";
+    cout << "1. Pree,ptive : \n";
+    cout << "2. Non-Preemptive: \n";
+    cout << "Enter Number : \n";
+
+    int modeChoice;
+    cin >> modeChoice;
+    vector<Process> processes;
+    ifstream file("inout.txt");
+    if (!file.is_open()){
+        cerr<<"Error Opening file 'input.txt'. Please make sure the file is in the correct location. \n";
+        return 1; 
+    }
+    
+
+
+
 }
