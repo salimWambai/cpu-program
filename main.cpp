@@ -150,8 +150,10 @@ int main (){
         cerr<<"Error Opening file 'input.txt'. Please make sure the file is in the correct location. \n";
         return 1; 
     }
-    
-
-
-
+    //data read process from fle to store in vector process
+    string name;
+    int priority, burst_time, arrival_time;
+    while (file >> name priority >> burst_time >> arrival_time){
+        processes.push_back(Process(name, priority, burst_time, arrival_time));
+    }
 }
