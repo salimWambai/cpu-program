@@ -153,7 +153,31 @@ int main (){
     //data read process from fle to store in vector process
     string name;
     int priority, burst_time, arrival_time;
-    while (file >> name priority >> burst_time >> arrival_time){
+    while (file >> name >> priority >> burst_time >> arrival_time){
         processes.push_back(Process(name, priority, burst_time, arrival_time));
     }
+
+    Scheduler* scheduler = nullptr;
+    //instance of selected scheduling algo
+
+    switch (choice){
+        case 1:
+        scheduler = new FCFS();
+        break;
+        case 2:
+        scheduler = new SJF();
+        break;
+        case 3:
+        scheduler = new RoundRobin();
+        break;
+        case 4:
+        scheduler = new PriorityAlgo();
+        break;
+        default:
+        cerr << "Invalid Choice. Exiting...\n";
+        return 1;
+    
+        }
+        //
+
 }
