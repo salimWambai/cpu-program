@@ -178,6 +178,17 @@ int main (){
         return 1;
     
         }
-        //
+        //selected scheduling algo
+        scheduler->scheduleProcesses(processes);
+
+        //stats dispaly
+        displayStats(processes);
+
+        //additional options
+        cout << "Select Option:\n";
+        cout << "1. Show Result\n";
+        cout << "2. End Program\n";
+        cout << "Enter the corresponding number: ";
+        
 
 }
