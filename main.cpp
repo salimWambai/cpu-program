@@ -189,6 +189,21 @@ int main (){
         cout << "1. Show Result\n";
         cout << "2. End Program\n";
         cout << "Enter the corresponding number: ";
-        
+
+        int option;
+        cin >> option;
+
+        if (option == 1) {
+            displayStats(processes);
+
+        } else if (option == 2 ) {
+            ofstream outputFIle("output.txt");
+            if (!outputFIle.is_open()){
+                cerr << "Error opening file 'output.txt'.\n";
+                return 1;
+            }
+
+            
+        }
 
 }
