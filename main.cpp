@@ -202,6 +202,12 @@ int main (){
                 cerr << "Error opening file 'output.txt'.\n";
                 return 1;
             }
+            //to write in output file
+            for (const Process& process : processes){
+                outp << process.name << "\t" << process.waiting_time << "\n";
+
+            }
+            
 
             
         }
