@@ -213,10 +213,7 @@ int main (){
             cerr << "Invalid option.  Exiting...\n";
             return 1;
         }
-        
-            
-
-            
-        }
-
-}
+        //clean up
+        delete scheduler;
+        return 0;    
+};
