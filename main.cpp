@@ -204,9 +204,16 @@ int main (){
             }
             //to write in output file
             for (const Process& process : processes){
-                outp << process.name << "\t" << process.waiting_time << "\n";
+                outputFIle << process.name << "\t" << process.waiting_time << "\n";
 
             }
+            //close output file
+            outputFIle.close();
+        } else {
+            cerr << "Invalid option.  Exiting...\n";
+            return 1;
+        }
+        
             
 
             
