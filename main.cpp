@@ -5,8 +5,9 @@
 #include <deque>
 #include <string>
 #include <iomanip>
+#include <unistd.h>
 using namespace std;
-
+void displayUsage();
 //process class
 class Process {
 public:
@@ -15,7 +16,7 @@ public:
     int burst_time;
     int arrival_time;
     int waiting_time;
-    double completed;
+    bool completed;
 
     
     Process(const string& n, int p, int burst, int arrival)
@@ -40,6 +41,13 @@ class FCFS : public Scheduler{
             cout<<"Process Executing: "<<process.name<< "Waiting Time: " << process.waiting_time  << ")\n";
         }
         cout<<"\n";
+         double average_waiting_time_fcfs = 0;
+        for (const Process& process : processes) {
+            average_waiting_time_fcfs += process.waiting_time;
+        }
+        average_waiting_time_fcfs /= processes.size();
+        cout << "Average Waiting Time (FCFS): " << fixed << setprecision(2) << average_waiting_time_fcfs << "\n";
+    
     }
 };
 //SJF
@@ -47,22 +55,45 @@ class SJF : public Scheduler {
 public:
     void scheduleProcesses(vector<Process>& processes) override {
         cout << "SJF Scheduling:\n";
-        vector<Process> sortedProcesses = processes;
-        sort(sortedProcesses.begin(), sortedProcesses.end(), [](const Process& a, const Process& b) {
-            return a.burst_time < b.burst_time;
+
+        sort(processes.begin(), processes.end(), [](const Process& a, const Process& b) {
+            if (a.burst_time != b.burst_time) {
+                return a.burst_time < b.burst_time;
+            } else {
+                return a.arrival_time < b.arrival_time;  // Consider arrival time in case of ties
+            }
         });
 
         int current_time = 0;
-        for (size_t i = 0; i < sortedProcesses.size(); ++i) {
-            Process& process = sortedProcesses[i];
-            process.waiting_time = current_time - process.arrival_time;
+        for (size_t i = 0; i < processes.size(); ++i) {
+            Process& process = processes[i];
+            process.waiting_time += current_time - process.arrival_time;
             current_time += process.burst_time;
             process.completed = true;
             cout << "Process Executing: " << process.name << " (Waiting Time: " << process.waiting_time << ")\n";
         }
         cout << "\n";
+
+        // Recalculate waiting times based on the original order of processes
+        sort(processes.begin(), processes.end(), [](const Process& a, const Process& b) {
+            return a.arrival_time < b.arrival_time;
+        });
+
+        double average_waiting_time_sjf = 0;
+        int accumulated_waiting_time = 0;
+        for (size_t i = 0; i < processes.size(); ++i) {
+            Process& process = processes[i];
+            process.waiting_time = accumulated_waiting_time;
+            accumulated_waiting_time += process.burst_time;
+            average_waiting_time_sjf += process.waiting_time;
+        }
+        average_waiting_time_sjf /= processes.size();
+
+        cout << "\nAverage Waiting Time (SJF): " << fixed << setprecision(2) << average_waiting_time_sjf << "\n";
     }
 };
+
+
 
 //RR scheduling
 class RoundRobin : public Scheduler{
@@ -87,6 +118,14 @@ class RoundRobin : public Scheduler{
             }
         }
         cout<<"\n";
+           
+    double average_waiting_time_rr = 0;
+for (const Process& process : processes) {
+    average_waiting_time_rr += process.waiting_time;
+}
+average_waiting_time_rr /= processes.size();
+cout << "Average Waiting Time (Round Robin): " << fixed << setprecision(2) << average_waiting_time_rr << "\n";
+
 
     }
 };
@@ -107,27 +146,62 @@ class PriorityAlgo : public Scheduler {
             cout << "Process Executing " << process.name << " (Waiting Time: " << process.waiting_time << ")\n"; 
         }
         cout<<"\n";
+      
+double average_waiting_time_priority = 0;
+for (const Process& process : processes) {
+    average_waiting_time_priority += process.waiting_time;
+}
+average_waiting_time_priority /= processes.size();
+cout << "Average Waiting Time (Priority Scheduling): " << fixed << setprecision(2) << average_waiting_time_priority << "\n";
+
     }
 };
 
 //statistics function
-void displayStats (const vector<Process>& processes){
-    cout << "Process\tWaiting Time\n";
-    for(const Process& process : processes){
-        cout << process.name << "\t" << process.waiting_time << "\n";
-
+void displayStats(const vector<Process>& processes, const string& schedulingMethod) {
+    cout << "Scheduling Method: " << schedulingMethod << "\n";
+    cout << "Process Waiting Times:\n";
+    
+    for (const Process& process : processes) {
+        cout << process.name << ": " << process.waiting_time << " ms\n";
     }
-    //average WT
+
+    // Average WT
     double average_waiting_time = 0;
-    for(const Process& process : processes){
+    for (const Process& process : processes) {
         average_waiting_time += process.waiting_time;
     }
     average_waiting_time /= processes.size();
-    cout << "\nAverage Waiting Time: " << fixed << setprecision(2) << average_waiting_time << "\n";
+    
+    cout << "Average Waiting Time: " << fixed << setprecision(2) << average_waiting_time << " ms\n";
+}
 
+void displayUsage() {
+    std::cout << "Usage: YourProgram -f inputFileName -o outputFileName\n";
 }
 //user main function UI
-int main (){
+int main (int argc, char *argv[]){
+   string inputFileName, outputFileName;
+    int opt;
+    while ((opt = getopt(argc, argv, "f:o:")) != -1){
+        switch (opt){
+            case 'f':
+            inputFileName = optarg;
+            break;
+            case 'o':
+             outputFileName = optarg;
+            break;
+            default:
+            displayUsage();
+            return 1;
+        }
+    }
+
+  if (inputFileName.empty() || outputFileName.empty()){
+    displayUsage();
+    return 1;
+}
+
     cout << "Select Scheduling Method: \n";
     cout << "1. FCFS\n";
     cout << "2. SJF\n";
@@ -137,55 +211,14 @@ int main (){
 
     int choice;
     cin>> choice;
-
-    cout << "Select mode: \n";
-    cout << "1. Pree,ptive : \n";
-    cout << "2. Non-Preemptive: \n";
-    cout << "Enter Number : \n";
-
     int modeChoice;
+    cout << "Select mode: \n";
+    cout << "1. Preemptive : \n";
+    cout << "2. Non-Preemptive: \n";
+    cout << "3. off: \n";
+    cout << "Enter Number : \n";
     cin >> modeChoice;
-    vector<Process> processes;
-    ifstream file("inout.txt");
-    if (!file.is_open()){
-        cerr<<"Error Opening file 'input.txt'. Please make sure the file is in the correct location. \n";
-        return 1; 
-    }
-    //data read process from fle to store in vector process
-    string name;
-    int priority, burst_time, arrival_time;
-    while (file >> name >> priority >> burst_time >> arrival_time){
-        processes.push_back(Process(name, priority, burst_time, arrival_time));
-    }
-
-    Scheduler* scheduler = nullptr;
-    //instance of selected scheduling algo
-
-    switch (choice){
-        case 1:
-        scheduler = new FCFS();
-        break;
-        case 2:
-        scheduler = new SJF();
-        break;
-        case 3:
-        scheduler = new RoundRobin();
-        break;
-        case 4:
-        scheduler = new PriorityAlgo();
-        break;
-        default:
-        cerr << "Invalid Choice. Exiting...\n";
-        return 1;
-    
-        }
-        //selected scheduling algo
-        scheduler->scheduleProcesses(processes);
-
-        //stats dispaly
-        displayStats(processes);
-
-        //additional options
+      //additional options
         cout << "Select Option:\n";
         cout << "1. Show Result\n";
         cout << "2. End Program\n";
@@ -193,28 +226,69 @@ int main (){
 
         int option;
         cin >> option;
+    vector<Process> processes;
+    ifstream file(inputFileName);
+    if (!file.is_open()){
+        cerr<<"Error Opening file '" << inputFileName << "' . Please make sure the file is in the correct location. \n";
+        return 1; 
+    }
+    cout << "File Opened \n";
+    //data read process from fle to store in vector process
+    string name;
+    int priority, burst_time, arrival_time;
+   while (file >> name >> priority >> burst_time >> arrival_time) {
+    cout << "Read: " << name << " " << priority << " " << burst_time << " " << arrival_time << endl;
+    processes.emplace_back(name, priority, burst_time, arrival_time);
+}
 
-        if (option == 1) {
-            displayStats(processes);
 
-        } else if (option == 2 ) {
-            ofstream outputFIle("output.txt");
-            if (!outputFIle.is_open()){
-                cerr << "Error opening file 'output.txt'.\n";
-                return 1;
-            }
-            //to write in output file
-            for (const Process& process : processes){
-                outputFIle << process.name << "\t" << process.waiting_time << "\n";
+    Scheduler* scheduler = nullptr;
+    //instance of selected scheduling algo
 
-            }
-            //close output file
-            outputFIle.close();
-        } else {
-            cerr << "Invalid option.  Exiting...\n";
-            return 1;
-        }
-        //clean up
-        delete scheduler;
-        return 0;    
+if (choice == 1) {
+    scheduler = new FCFS();
+    displayStats(processes, "First Come First Served");
+} else if (choice == 2) {
+    scheduler = new SJF();
+    displayStats(processes, "Shortest Job First");
+} else if (choice == 3) {
+    scheduler = new RoundRobin();
+    displayStats(processes, "Round Robin");
+} else if (choice == 4) {
+    scheduler = new PriorityAlgo();
+    displayStats(processes, "Priority Scheduling");
+} else {
+    cerr << "Invalid Choice. Exiting...\n";
+    return 1;
+}
+// Error handling for invalid user input
+if (choice < 1 || choice > 4) {
+    cerr << "Invalid choice. Exiting...\n";
+    return 1;
+}
+scheduler->scheduleProcesses(processes);
+
+if (option == 1) {
+    displayStats(processes);
+} else if (option == 2) {
+    ofstream outputFile(outputFileName);
+    if (!outputFile.is_open()) {
+        cerr << "Error opening file '" << outputFileName << "'.\n";
+        return 1;
+    }
+    // Write to the output file
+    for (const Process &process : processes) {
+        outputFile << process.name << "\t" << process.waiting_time << "\n";
+    }
+    // Close the output file
+    outputFile.close();
+} else {
+    cerr << "Invalid option. Exiting...\n";
+    return 1;
+}
+
+// Clean up
+delete scheduler;
+return 0;
+   
 };
