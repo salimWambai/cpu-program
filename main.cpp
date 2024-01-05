@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <memory>
 #include <deque>
 #include <string>
 #include <iomanip>
@@ -85,7 +86,7 @@ public:
             Process& process = processes[i];
             process.waiting_time = accumulated_waiting_time;
             accumulated_waiting_time += process.burst_time;
-            average_waiting_time_sjf += process.waiting_time;
+            average_waiting_time_sjf += process.waiting_time + process.burst_time;
         }
         average_waiting_time_sjf /= processes.size();
 
@@ -112,7 +113,8 @@ class RoundRobin : public Scheduler{
                 processQueue.push_back(process);
             }
             else{
-                process.waiting_time += processQueue.size() * timeQuantum;
+               process.waiting_time += (processQueue.size() - 1) * timeQuantum;
+
                 process.completed = true;
                 cout<<"Process Executing: "<< process.name<< "Waiting TIme: " <<process.waiting_time <<  "\n";
             }
@@ -163,7 +165,8 @@ void displayStats(const vector<Process>& processes, const string& schedulingMeth
     cout << "Process Waiting Times:\n";
     
     for (const Process& process : processes) {
-        cout << process.name << ": " << process.waiting_time << " ms\n";
+       // cout << process.name << ": " << process.waiting_time << " ms\n";
+    cout << "Average Waiting Time: " << fixed << setprecision(2) << average_waiting_time / processes.size() << " ms\n";
     }
 
     // Average WT
@@ -218,6 +221,11 @@ int main (int argc, char *argv[]){
     cout << "3. off: \n";
     cout << "Enter Number : \n";
     cin >> modeChoice;
+    if (modeChoice < 1 || modeChoice > 3) {
+    cerr << "Invalid mode choice. Exiting...\n";
+    return 1;
+}
+
       //additional options
         cout << "Select Option:\n";
         cout << "1. Show Result\n";
@@ -241,6 +249,7 @@ int main (int argc, char *argv[]){
     processes.emplace_back(name, priority, burst_time, arrival_time);
 }
 
+   file.close();
 
     Scheduler* scheduler = nullptr;
     //instance of selected scheduling algo
@@ -269,7 +278,8 @@ if (choice < 1 || choice > 4) {
 scheduler->scheduleProcesses(processes);
 
 if (option == 1) {
-    displayStats(processes);
+   displayStats(processes, "Unknown Scheduling Method");
+
 } else if (option == 2) {
     ofstream outputFile(outputFileName);
     if (!outputFile.is_open()) {
@@ -290,5 +300,5 @@ if (option == 1) {
 // Clean up
 delete scheduler;
 return 0;
-   
+
 };
