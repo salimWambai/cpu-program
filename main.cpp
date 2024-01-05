@@ -43,23 +43,24 @@ class FCFS : public Scheduler{
     }
 };
 //SJF
-class SJF : public Scheduler{
-    public:
-    void scheduleProcesses(const vector<Process>& processes){
-        cout<<"SJF Scheduling :\n";
-        vector<Process> sortedProcessess = processes;
-        sort(sortedProcessess.begin(), sortedProcessess.end(), [](const Process& a, const Process& b) {
+class SJF : public Scheduler {
+public:
+    void scheduleProcesses(vector<Process>& processes) override {
+        cout << "SJF Scheduling:\n";
+        vector<Process> sortedProcesses = processes;
+        sort(sortedProcesses.begin(), sortedProcesses.end(), [](const Process& a, const Process& b) {
             return a.burst_time < b.burst_time;
         });
+
         int current_time = 0;
-        for (size_t i = 0; i < sortedProcessess.size(); ++i){
-            Process& process = sortedProcessess[i];
+        for (size_t i = 0; i < sortedProcesses.size(); ++i) {
+            Process& process = sortedProcesses[i];
             process.waiting_time = current_time - process.arrival_time;
             current_time += process.burst_time;
-            process.completed ;
-            cout<<"Process Executing: " << process.name << "\n";
+            process.completed = true;
+            cout << "Process Executing: " << process.name << " (Waiting Time: " << process.waiting_time << ")\n";
         }
-        cout<<"\n";
+        cout << "\n";
     }
 };
 
