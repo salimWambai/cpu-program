@@ -53,6 +53,7 @@ public:
 };
 
  // SJF class
+
 class SJF : public Scheduler {
 public:
     void scheduleProcesses(list<Process>& processes) override {
@@ -67,39 +68,46 @@ public:
         });
 
         int current_time = 0;
+        double total_waiting_time_sjf = 0;
+
         for (auto& process : processes) {
             process.waiting_time += current_time - process.arrival_time;
             current_time += process.burst_time;
+            total_waiting_time_sjf += process.waiting_time;
             process.completed = true;
             cout << "Process Executing: " << process.name << " (Waiting Time: " << process.waiting_time << ")\n";
         }
 
-        processes.sort([](const Process& a, const Process& b) {
-            return a.arrival_time < b.arrival_time;
-        });
+        double average_waiting_time_sjf = total_waiting_time_sjf / processes.size();
+        cout << "\nAverage Waiting Time (SJF): " << fixed << setprecision(2) << average_waiting_time_sjf << "\n";
+    }
 
+    // Function to calculate SJF averages
+    void calculateSJFAverages(list<Process>& processes) {
         double average_waiting_time_sjf = 0;
         int accumulated_waiting_time = 0;
         for (auto& process : processes) {
             process.waiting_time = accumulated_waiting_time;
             accumulated_waiting_time += process.burst_time;
-            average_waiting_time_sjf += process.waiting_time + process.burst_time;
+            average_waiting_time_sjf += process.waiting_time;
         }
-        average_waiting_time_sjf /= processes.size();
-
-        cout << "\nAverage Waiting Time (SJF): " << fixed << setprecision(2) << average_waiting_time_sjf << "\n";
     }
 };
+
+ 
 
 //  RoundRobin class
 class RoundRobin : public Scheduler {
 public:
-    void scheduleProcesses(list<Process>& processes) {
+    void scheduleProcesses(list<Process>& processes) override {
         cout << "RoundRobin:  \n";
         int timeQuantum;
         cout << "Enter time quantum for Round Robin: ";
         cin >> timeQuantum;
         deque<Process> processQueue(processes.begin(), processes.end());
+
+        double average_waiting_time_rr = 0;  // Declare the variable here
+
         while (!processQueue.empty()) {
             Process& process = processQueue.front();
             processQueue.pop_front();
@@ -113,7 +121,8 @@ public:
             }
         }
 
-        double average_waiting_time_rr = 0;
+        // double total_waiting_time_rr = 0;
+
         for (const Process& process : processes) {
             average_waiting_time_rr += process.waiting_time;
         }
@@ -121,6 +130,7 @@ public:
         cout << "Average Waiting Time (Round Robin): " << fixed << setprecision(2) << average_waiting_time_rr << "\n";
     }
 };
+
 
 //   PriorityAlgo class
 class PriorityAlgo : public Scheduler {
@@ -249,6 +259,7 @@ if (choice == 1) {
 } else if (choice == 2) {
     scheduler = new SJF();
     displayStats(processes, "Shortest Job First");
+     dynamic_cast<SJF*>(scheduler)->calculateSJFAverages(processes);
 } else if (choice == 3) {
     scheduler = new RoundRobin();
     displayStats(processes, "Round Robin");
