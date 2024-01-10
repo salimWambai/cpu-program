@@ -1,0 +1,3 @@
+Scheuling Method: First Come First Served 
+Process Waiting Times: 
+Average waiting time -0

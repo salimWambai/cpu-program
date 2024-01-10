@@ -7,6 +7,7 @@
 #include <string>
 #include <iomanip>
 #include <unistd.h>
+#include <list>
 using namespace std;
 void displayUsage();
 //process class
@@ -26,64 +27,60 @@ public:
 //scheduler funtion
 class Scheduler{
     public:
-    virtual void scheduleProcesses(vector<Process>& processes) = 0;
+    virtual void scheduleProcesses(list<Process>& processes) = 0;
 };
 //FCFS
-class FCFS : public Scheduler{
-    public:
-    void scheduleProcesses(vector<Process>& processes) {
-        cout<<"FCFS Scheduling:\n";
+ 
+class FCFS : public Scheduler {
+public:
+    void scheduleProcesses(list<Process>& processes) {
+        cout << "FCFS Scheduling:\n";
         int current_time = 0;
-        for(size_t i = 0; i < processes.size(); ++i){
-           Process& process = processes[i];
-           process.waiting_time = current_time - process.arrival_time;
+        for (auto& process : processes) {
+            process.waiting_time = current_time - process.arrival_time;
             current_time += process.burst_time;
-             process.completed = true;
-            cout<<"Process Executing: "<<process.name<< "Waiting Time: " << process.waiting_time  << ")\n";
+            process.completed = true;
+            cout << "Process Executing: " << process.name << " (Waiting Time: " << process.waiting_time << ")\n";
         }
-        cout<<"\n";
-         double average_waiting_time_fcfs = 0;
+
+        double average_waiting_time_fcfs = 0;
         for (const Process& process : processes) {
             average_waiting_time_fcfs += process.waiting_time;
         }
         average_waiting_time_fcfs /= processes.size();
         cout << "Average Waiting Time (FCFS): " << fixed << setprecision(2) << average_waiting_time_fcfs << "\n";
-    
     }
 };
-//SJF
+
+ // SJF class
 class SJF : public Scheduler {
 public:
-    void scheduleProcesses(vector<Process>& processes) override {
+    void scheduleProcesses(list<Process>& processes) override {
         cout << "SJF Scheduling:\n";
 
-        sort(processes.begin(), processes.end(), [](const Process& a, const Process& b) {
+        processes.sort([](const Process& a, const Process& b) {
             if (a.burst_time != b.burst_time) {
                 return a.burst_time < b.burst_time;
             } else {
-                return a.arrival_time < b.arrival_time;  // Consider arrival time in case of ties
+                return a.arrival_time < b.arrival_time;
             }
         });
 
         int current_time = 0;
-        for (size_t i = 0; i < processes.size(); ++i) {
-            Process& process = processes[i];
+        for (auto& process : processes) {
             process.waiting_time += current_time - process.arrival_time;
             current_time += process.burst_time;
             process.completed = true;
             cout << "Process Executing: " << process.name << " (Waiting Time: " << process.waiting_time << ")\n";
         }
-        cout << "\n";
 
-        // Recalculate waiting times based on the original order of processes
-        sort(processes.begin(), processes.end(), [](const Process& a, const Process& b) {
+        processes.sort([](const Process& a, const Process& b) {
             return a.arrival_time < b.arrival_time;
         });
 
         double average_waiting_time_sjf = 0;
         int accumulated_waiting_time = 0;
-        for (size_t i = 0; i < processes.size(); ++i) {
-            Process& process = processes[i];
+        for (auto& process : processes) {
             process.waiting_time = accumulated_waiting_time;
             accumulated_waiting_time += process.burst_time;
             average_waiting_time_sjf += process.waiting_time + process.burst_time;
@@ -94,16 +91,14 @@ public:
     }
 };
 
-
-
-//RR scheduling
-class RoundRobin : public Scheduler{
-    public:
-    void scheduleProcesses(vector<Process>& processes) {
-        cout<<"RoundRobin:  \n";
+//  RoundRobin class
+class RoundRobin : public Scheduler {
+public:
+    void scheduleProcesses(list<Process>& processes) {
+        cout << "RoundRobin:  \n";
         int timeQuantum;
-        cout<<"Enter time quantum for Round Robin: ";
-        cin>> timeQuantum;
+        cout << "Enter time quantum for Round Robin: ";
+        cin >> timeQuantum;
         deque<Process> processQueue(processes.begin(), processes.end());
         while (!processQueue.empty()) {
             Process& process = processQueue.front();
@@ -111,63 +106,52 @@ class RoundRobin : public Scheduler{
             if (process.burst_time > timeQuantum) {
                 process.burst_time -= timeQuantum;
                 processQueue.push_back(process);
-            }
-            else{
-               process.waiting_time += (processQueue.size() - 1) * timeQuantum;
-
+            } else {
+                process.waiting_time += (processQueue.size() - 1) * timeQuantum;
                 process.completed = true;
-                cout<<"Process Executing: "<< process.name<< "Waiting TIme: " <<process.waiting_time <<  "\n";
+                cout << "Process Executing: " << process.name << " (Waiting Time: " << process.waiting_time << ")\n";
             }
         }
-        cout<<"\n";
-           
-    double average_waiting_time_rr = 0;
-for (const Process& process : processes) {
-    average_waiting_time_rr += process.waiting_time;
-}
-average_waiting_time_rr /= processes.size();
-cout << "Average Waiting Time (Round Robin): " << fixed << setprecision(2) << average_waiting_time_rr << "\n";
 
-
+        double average_waiting_time_rr = 0;
+        for (const Process& process : processes) {
+            average_waiting_time_rr += process.waiting_time;
+        }
+        average_waiting_time_rr /= processes.size();
+        cout << "Average Waiting Time (Round Robin): " << fixed << setprecision(2) << average_waiting_time_rr << "\n";
     }
 };
-//Priority scheduling
+
+//   PriorityAlgo class
 class PriorityAlgo : public Scheduler {
-    public:
-    void scheduleProcesses(vector<Process>& processes) {
-        cout<<"Priority Scheduling: \n";
-        sort(processes.begin(), processes.end(), [](const Process& a, const Process& b){
+public:
+    void scheduleProcesses(list<Process>& processes) {
+        cout << "Priority Scheduling: \n";
+        processes.sort([](const Process& a, const Process& b) {
             return a.priority > b.priority;
         });
         int current_time = 0;
-        for (size_t i = 0; i <processes.size(); ++i){
-            Process& process = processes[i];
+        for (auto& process : processes) {
             process.waiting_time = current_time - process.arrival_time;
             current_time += process.burst_time;
             process.completed = true;
-            cout << "Process Executing " << process.name << " (Waiting Time: " << process.waiting_time << ")\n"; 
+            cout << "Process Executing " << process.name << " (Waiting Time: " << process.waiting_time << ")\n";
         }
-        cout<<"\n";
-      
-double average_waiting_time_priority = 0;
-for (const Process& process : processes) {
-    average_waiting_time_priority += process.waiting_time;
-}
-average_waiting_time_priority /= processes.size();
-cout << "Average Waiting Time (Priority Scheduling): " << fixed << setprecision(2) << average_waiting_time_priority << "\n";
 
+        double average_waiting_time_priority = 0;
+        for (const Process& process : processes) {
+            average_waiting_time_priority += process.waiting_time;
+        }
+        average_waiting_time_priority /= processes.size();
+        cout << "Average Waiting Time (Priority Scheduling): " << fixed << setprecision(2) << average_waiting_time_priority << "\n";
     }
 };
 
+
 //statistics function
-void displayStats(const vector<Process>& processes, const string& schedulingMethod) {
+void displayStats(const list<Process>& processes, const string& schedulingMethod) {
     cout << "Scheduling Method: " << schedulingMethod << "\n";
     cout << "Process Waiting Times:\n";
-    
-    for (const Process& process : processes) {
-       // cout << process.name << ": " << process.waiting_time << " ms\n";
-    cout << "Average Waiting Time: " << fixed << setprecision(2) << average_waiting_time / processes.size() << " ms\n";
-    }
 
     // Average WT
     double average_waiting_time = 0;
@@ -175,9 +159,14 @@ void displayStats(const vector<Process>& processes, const string& schedulingMeth
         average_waiting_time += process.waiting_time;
     }
     average_waiting_time /= processes.size();
-    
+
+    for (const Process& process : processes) {
+        cout << process.name << ": " << process.waiting_time << " ms\n";
+    }
+
     cout << "Average Waiting Time: " << fixed << setprecision(2) << average_waiting_time << " ms\n";
 }
+
 
 void displayUsage() {
     std::cout << "Usage: YourProgram -f inputFileName -o outputFileName\n";
@@ -234,14 +223,14 @@ int main (int argc, char *argv[]){
 
         int option;
         cin >> option;
-    vector<Process> processes;
+    list<Process> processes;
     ifstream file(inputFileName);
     if (!file.is_open()){
         cerr<<"Error Opening file '" << inputFileName << "' . Please make sure the file is in the correct location. \n";
         return 1; 
     }
     cout << "File Opened \n";
-    //data read process from fle to store in vector process
+    //data read process from fle to store in list process
     string name;
     int priority, burst_time, arrival_time;
    while (file >> name >> priority >> burst_time >> arrival_time) {
