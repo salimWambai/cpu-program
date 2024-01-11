@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <algorithm>
 #include <memory>
 #include <deque>
@@ -163,17 +162,19 @@ void displayStats(const list<Process>& processes, const string& schedulingMethod
     cout << "Scheduling Method: " << schedulingMethod << "\n";
     cout << "Process Waiting Times:\n";
 
-    // Average WT
+    // Display process names and waiting times vertically
+    for (const Process& process : processes) {
+        cout << process.name << ":\t" << process.waiting_time << " ms\n";
+    }
+
+    // Average waiting time calculation
     double average_waiting_time = 0;
     for (const Process& process : processes) {
         average_waiting_time += process.waiting_time;
     }
     average_waiting_time /= processes.size();
 
-    for (const Process& process : processes) {
-        cout << process.name << ": " << process.waiting_time << " ms\n";
-    }
-
+    // Display average waiting time
     cout << "Average Waiting Time: " << fixed << setprecision(2) << average_waiting_time << " ms\n";
 }
 
